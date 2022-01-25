@@ -1,0 +1,32 @@
+#Latest working setup for Ubuntu 14.04
+#Based on https://github.com/adafruit/esp8266-micropython-vagrant
+    echo "Installing esp-open-sdk, Espressif ESP-IDF, and micropython dependencies..."
+    sudo apt-get update
+    sudo apt-get install -y build-essential git make unrar-free unzip \
+                            autoconf automake libtool gcc g++ gperf \
+                            flex bison texinfo gawk ncurses-dev libexpat-dev \
+                            python sed libreadline-dev libffi-dev pkg-config \
+                            help2man python-dev python-serial wget linux-image-extra-$(uname -r)
+    cd ~
+    wget https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz 2> /dev/null
+    tar xvfz xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz
+    echo "PATH=/home/vagrant/xtensa-esp32-elf/bin:\$PATH" >> ~/.profile
+    git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
+    cd esp-open-sdk
+    cd crosstool-NG/.build/tarballs 
+	wget https://libisl.sourceforge.io/isl-0.14.tar.gz #Fixes isl timeout
+ 	wget https://github.com/libexpat/libexpat/releases/download/R_2_1_0/expat-2.1.0.tar.gz #Fixes expat issue
+    make #Can take up to 6 hours, depending on the system ressources given
+    echo "PATH=$(pwd)/xtensa-lx106-elf/bin:\$PATH" >> ~/.profile
+    source ~/.profile
+    cd ..
+    git clone --recursive https://github.com/espressif/esp-idf.git #Lot of modules
+    cd esp-idf
+    ./install.sh
+    cd ..
+    git clone --recursive https://github.com/micropython/micropython.git #Lot of modules
+    cd micropython
+    make -C mpy-cross
+    cd ports
+    make -C esp8266 
+    axtls
